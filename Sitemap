@@ -1,5 +1,5 @@
-import advertools as adv
-import pandas as pd
+import streamlit as st
 
-sitemap = adv.sitemap_to_df('https://www.zoho.com/blog/payments/sitemap.xml')
-sitemap
+# Text input
+user_input = st.text_input("Enter Sitemap Url:")
+st.write("You entered:", user_input)

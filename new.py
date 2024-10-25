@@ -1,6 +1,4 @@
 import streamlit as st
  
-st.write("""
-Hai
-""")
+st.write("Hai")
  

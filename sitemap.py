@@ -17,5 +17,5 @@ if user_input:
         else:
             st.warning("No URLs found in the sitemap.")
 
-except Exception as e:
+    except Exception as e:
         st.error(f"An error occurred: {e}")

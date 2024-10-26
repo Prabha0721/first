@@ -3,7 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-myURL = 'https://www.jllhomes.co.in/sitemap.xml?page=sitemap'
+st.header("Extract URLs from Sitemap")
+user_input = st.text_input("Enter sitemap URL:")
+
 page = requests.get(myURL)
 soup = BeautifulSoup(page.content, 'html.parser')
 urls = soup.find_all('loc')

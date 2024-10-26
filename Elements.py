@@ -55,9 +55,8 @@ if user_input:
         st.error(f"Error fetching sitemap: {e}")
 
  # Create a download button
-            csv = sitemap_df.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label="Download CSV",
+csv = sitemap_df.to_csv(index=False).encode('utf-8')
+st.download_button(label="Download CSV",
                 data=csv,
                 file_name='sitemap_urls.csv',
-                mime='text/csv',
+                mime='text/csv')

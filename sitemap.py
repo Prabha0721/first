@@ -16,3 +16,6 @@ if user_input:
             st.dataframe(sitemap_df)
         else:
             st.warning("No URLs found in the sitemap.")
+
+except Exception as e:
+        st.error(f"An error occurred: {e}")

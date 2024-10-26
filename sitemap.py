@@ -1,4 +1,3 @@
-!pip install advertools
 import streamlit as st
 st.header("To Extract Urls")
 

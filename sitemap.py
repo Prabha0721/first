@@ -1,5 +1,5 @@
 import streamlit as st
-st.header("To get all Urls from Sitemap")
+st.header("To Extract Urls")
 
-user_input = st.text_input("Enter some text:")
+user_input = st.text_input("Enter sitemap url:")
 st.write(user_input)

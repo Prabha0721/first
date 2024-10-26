@@ -48,15 +48,17 @@ if user_input:
         # Create a DataFrame and display it
         if data:
             df = pd.DataFrame(data)
-            st.dataframe(df)  # Use st.dataframe to display the DataFrame
+            st.dataframe(df)  # Display the DataFrame
+
+            # Add a download button for the CSV file
+            csv = df.to_csv(index=False)
+            st.download_button(
+                label="Download CSV",
+                data=csv,
+                file_name='sitemap_data.csv',
+                mime='text/csv'
+            )
         else:
             st.warning("No valid URLs found.")
     except Exception as e:
         st.error(f"Error fetching sitemap: {e}")
-
- # Create a download button
-csv = sitemap_df.to_csv(index=False).encode('utf-8')
-st.download_button(label="Download CSV",
-                data=csv,
-                file_name='sitemap_urls.csv',
-                mime='text/csv')

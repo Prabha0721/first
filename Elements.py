@@ -3,7 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-st.header("Extract URLs from Sitemap")
+st.header("Extract elements from Sitemap")
 user_input = st.text_input("Enter sitemap URL:")
 
 if user_input:

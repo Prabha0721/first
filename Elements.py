@@ -31,6 +31,12 @@ if user_input:
 
                     canonical = soup.find('link', rel='canonical')
                     canonical_url = canonical['href'] if canonical else "Canonical not found"
+                    
+                    if canonical_url == currentURL:
+                        canonical_url = "Self-Referential"
+
+                    robots=soup.find('meta', attrs={'name':'robots'})
+                    robots_text=robots['content'] if robots else "Not found"
 
                     h1 = soup.find('h1')
                     h1_text = h1.get_text() if h1 else "H1 not found"

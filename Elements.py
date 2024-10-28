@@ -46,7 +46,8 @@ if user_input:
                         'Title': title_text,
                         'Description': description_text,
                         'H1': h1_text,
-                        'Canonical URL': canonical_url
+                        'Canonical URL': canonical_url,
+                        'Noindex/Nofollow':robots_text
                     })
                 except Exception as e:
                     st.error(f"Error processing URL {currentURL}: {e}")

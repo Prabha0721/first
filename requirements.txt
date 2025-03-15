@@ -1,5 +1,6 @@
 advertools
 bs4
+cosine_similarity
 
 
 

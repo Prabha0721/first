@@ -1,7 +1,12 @@
 advertools
 bs4
-cosine_similarity
 sklearn.metrics.pairwise
+streamlit
+pandas
+numpy
+scikit-learn
+sentence-transformers
+
 
 
 

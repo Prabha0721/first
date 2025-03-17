@@ -1,53 +1,67 @@
 import streamlit as st
-import pandas as pd
+import requests
+import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
+from sentence_transformers import SentenceTransformer
 import numpy as np
-import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity
 
-# Load embeddings
-@st.cache_data
-def load_embeddings(file_path):
-    df = pd.read_csv(file_path) if file_path.endswith(".csv") else pd.read_json(file_path)
-    
-    # Convert embedding columns to NumPy arrays
-    if "embedding" in df.columns:
-        df["embedding"] = df["embedding"].apply(lambda x: np.array(x))
-    else:
-        embedding_columns = df.columns[1:]  # Assuming first column is URL
-        df["embedding"] = df[embedding_columns].apply(lambda row: np.array(row, dtype=float), axis=1)
-    
-    return df
+# Load model
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
-# Find similar pages based on cosine similarity
-def find_similar_pages(url, df, top_n=5):
-    query_embedding = df[df["url"] == url]["embedding"].values
+def extract_sitemap_urls(sitemap_url):
+    """Fetch and parse URLs from sitemap.xml"""
+    response = requests.get(sitemap_url)
+    root = ET.fromstring(response.content)
+    urls = [elem.text for elem in root.findall(".//{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
+    return urls
 
-    if len(query_embedding) == 0:
-        return None  # URL not found in dataset
-    
-    query_embedding = query_embedding[0].reshape(1, -1)  # Reshape for similarity calculation
-    all_embeddings = np.vstack(df["embedding"].values)  # Convert list of arrays to 2D NumPy array
+def get_text_from_url(url):
+    """Scrape and extract visible text from a webpage"""
+    try:
+        response = requests.get(url, timeout=5)
+        soup = BeautifulSoup(response.text, "html.parser")
+        text = " ".join([p.get_text() for p in soup.find_all("p")])
+        return text.strip()
+    except Exception as e:
+        return ""
 
-    similarities = cosine_similarity(query_embedding, all_embeddings)[0]
-    df["similarity"] = similarities  # Add similarity scores
-    df_sorted = df.sort_values(by="similarity", ascending=False)  # Sort by similarity
+def generate_embeddings(urls):
+    """Generate embeddings for all URLs"""
+    embeddings = {}
+    for url in urls:
+        text = get_text_from_url(url)
+        if text:
+            embeddings[url] = model.encode(text)
+    return embeddings
 
-    return df_sorted[["url", "similarity"]].head(top_n + 1)[1:]  # Exclude the original URL
+def find_related_pages(target_url, url_list, embedding_matrix, top_n=3):
+    """Find top-N related pages based on cosine similarity"""
+    target_idx = url_list.index(target_url)
+    similarities = cosine_similarity([embedding_matrix[target_idx]], embedding_matrix)[0]
+    sorted_indices = np.argsort(similarities)[::-1]
+    related_urls = [(url_list[i], similarities[i]) for i in sorted_indices if i != target_idx][:top_n]
+    return related_urls
 
 # Streamlit UI
-st.title("Internal Linking Suggestion Tool")
-uploaded_file = st.file_uploader("Upload Sitemap Embeddings File (CSV/JSON)", type=["csv", "json"])
+st.title("🔗 Internal Linking Helper")
 
-if uploaded_file is not None:
-    df = load_embeddings(uploaded_file)
-
-    url_input = st.text_input("Enter URL to Find Related Pages")
+sitemap_url = st.text_input("Enter Sitemap URL:", "https://example.com/sitemap.xml")
+if st.button("Process Sitemap"):
+    st.write("Extracting URLs...")
+    urls = extract_sitemap_urls(sitemap_url)
     
-    if url_input:
-        similar_pages = find_similar_pages(url_input, df)
-        
-        if similar_pages is None:
-            st.error("URL not found in dataset.")
-        else:
-            st.success("Here are the most relevant internal linking suggestions:")
-            st.dataframe(similar_pages)
-
+    st.write(f"Found {len(urls)} URLs. Generating embeddings...")
+    embeddings = generate_embeddings(urls)
+    
+    url_list = list(embeddings.keys())
+    embedding_matrix = np.array(list(embeddings.values()))
+    
+    st.success("Embeddings generated! Select a URL to find related pages.")
+    selected_url = st.selectbox("Select a URL:", url_list)
+    
+    if st.button("Find Related Pages"):
+        related_pages = find_related_pages(selected_url, url_list, embedding_matrix)
+        st.write("### Related Pages for Internal Linking:")
+        for url, score in related_pages:
+            st.write(f"🔗 [{url}]({url}) (Similarity: {score:.2f})")

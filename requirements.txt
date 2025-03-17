@@ -7,5 +7,6 @@ numpy
 scikit-learn
 sentence-transformers
 requests
+xml.etree.
 
 

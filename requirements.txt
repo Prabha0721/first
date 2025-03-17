@@ -7,7 +7,7 @@ numpy
 scikit-learn
 sentence-transformers
 requests
-xml.etree.
+xml.etree
 beautifulsoup4
 lxml
 pip install --upgrade pip

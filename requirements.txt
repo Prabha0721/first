@@ -6,7 +6,6 @@ pandas
 numpy
 scikit-learn
 sentence-transformers
-
-
+requests
 
 

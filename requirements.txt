@@ -1,6 +1,5 @@
 advertools
 bs4
-sklearn.metrics.pairwise
 streamlit
 pandas
 numpy

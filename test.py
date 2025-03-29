@@ -63,18 +63,20 @@ if st.button("Process Sitemap"):
     url_list = list(embeddings.keys())
     embedding_matrix = np.array(list(embeddings.values()))
     
-    st.success("Embeddings generated! Type a URL to find related pages.")
-    
-    # New: Allow user to type the specific URL instead of selecting from a dropdown
+    st.success("Embeddings generated! Now, type a URL to find related pages.")
+
+    # Text input for URL to find related pages
     selected_url = st.text_input("Type a URL to find related pages:", "")
     
-    if selected_url and selected_url in url_list:
-        if st.button("Find Related Pages"):
-            related_pages = find_related_pages(selected_url, url_list, embedding_matrix)
-            st.write("### Related Pages for Internal Linking:")
-            for url, score in related_pages:
-                st.write(f"🔗 [{url}]({url}) (Similarity: {score:.2f})")
+    if selected_url:
+        if selected_url in url_list:
+            # When the "Find Related Pages" button is clicked
+            find_related = st.button("Find Related Pages")
+            
+            if find_related:
+                related_pages = find_related_pages(selected_url, url_list, embedding_matrix)
+                st.write("### Related Pages for Internal Linking:")
+                for url, score in related_pages:
+                    st.write(f"🔗 [{url}]({url}) (Similarity: {score:.2f})")
         else:
-            st.write("Please enter a valid URL from the list.")
-    elif selected_url:
-        st.write(f"URL `{selected_url}` is not in the sitemap. Please check and try again.")
+            st.write(f"URL `{selected_url}` is not in the sitemap. Please check and try again.")

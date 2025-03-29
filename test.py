@@ -52,8 +52,10 @@ def find_related_pages(target_url, url_list, embedding_matrix, top_n=3):
 # Streamlit UI
 st.title("🔗 Internal Linking Helper")
 
+# Sitemap URL input
 sitemap_url = st.text_input("Enter Sitemap URL:", "https://example.com/sitemap.xml")
 
+# Process sitemap button
 if st.button("Process Sitemap"):
     # Extract URLs from sitemap
     st.write("Extracting URLs...")
@@ -68,20 +70,28 @@ if st.button("Process Sitemap"):
     url_list = list(embeddings.keys())
     embedding_matrix = np.array(list(embeddings.values()))
     
-    st.success("Embeddings generated! Now, type a URL to find related pages.")
+    # Store the processed state so the user can select a URL later
+    st.session_state.urls = url_list
+    st.session_state.embedding_matrix = embedding_matrix
+    st.session_state.embeddings = embeddings
     
-    # Text input for the user to enter a specific URL
+    st.success("Embeddings generated! Now, type a URL to find related pages.")
+
+# URL input to search related pages
+if "urls" in st.session_state:
     selected_url = st.text_input("Type a URL to find related pages:", "")
     
     if selected_url:
         # Validate that the entered URL exists in the sitemap
-        if selected_url in url_list:
+        if selected_url in st.session_state.urls:
             # Button to trigger finding related pages
             if st.button("Find Related Pages"):
                 # Find the related pages based on cosine similarity
-                related_pages = find_related_pages(selected_url, url_list, embedding_matrix)
+                related_pages = find_related_pages(selected_url, st.session_state.urls, st.session_state.embedding_matrix)
                 st.write("### Related Pages for Internal Linking:")
                 for url, score in related_pages:
                     st.write(f"🔗 [{url}]({url}) (Similarity: {score:.2f})")
         else:
             st.write(f"URL `{selected_url}` is not in the sitemap. Please check and try again.")
+else:
+    st.info("Please process the sitemap first.")

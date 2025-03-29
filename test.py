@@ -68,7 +68,7 @@ def create_csv(target_url, related_urls):
 st.title("🔗 Internal Linking Helper")
 
 # Sitemap URL input
-sitemap_url = st.text_input("Enter Sitemap URL:", "https://example.com/sitemap.xml")
+sitemap_url = st.text_input("Enter Sitemap URL:")
 
 # Process sitemap button
 if st.button("Process Sitemap"):

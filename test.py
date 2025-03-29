@@ -53,7 +53,7 @@ def find_related_pages(target_url, url_list, embedding_matrix, top_n=3):
 st.title("🔗 Internal Linking Helper")
 
 # Sitemap URL input
-sitemap_url = st.text_input("Enter Sitemap URL:", "https://example.com/sitemap.xml")
+sitemap_url = st.text_input("Enter Sitemap URL:")
 
 # Process sitemap button
 if st.button("Process Sitemap"):

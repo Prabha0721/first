@@ -10,7 +10,7 @@ requests
 xml.etree
 beautifulsoup4
 lxml
-pip==25.0.1
+
 
 
 

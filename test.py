@@ -65,7 +65,7 @@ def create_csv(target_url, related_urls):
     return csv
 
 # Streamlit UI
-st.title("🔗 Internal Linking Helper")
+st.title("🔗 Internal Linking Tool")
 
 # Sitemap URL input
 sitemap_url = st.text_input("Enter Sitemap URL:")

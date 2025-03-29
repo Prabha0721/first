@@ -6,7 +6,6 @@ numpy
 scikit-learn
 sentence-transformers
 requests
-xml.etree
 beautifulsoup4
 lxml
 

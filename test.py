@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
+from io import StringIO
 
 # Load the model
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
@@ -49,11 +51,24 @@ def find_related_pages(target_url, url_list, embedding_matrix, top_n=3):
     related_urls = [(url_list[i], similarities[i]) for i in sorted_indices if i != target_idx][:top_n]
     return related_urls
 
+def create_csv(target_url, related_urls):
+    """Creates a CSV from target URL and related URLs"""
+    data = {
+        "Target URL": [target_url] * len(related_urls),
+        "Related URL": [url for url, _ in related_urls],
+        "Similarity Score": [score for _, score in related_urls]
+    }
+    df = pd.DataFrame(data)
+    
+    # Convert the DataFrame to CSV
+    csv = df.to_csv(index=False)
+    return csv
+
 # Streamlit UI
 st.title("🔗 Internal Linking Helper")
 
 # Sitemap URL input
-sitemap_url = st.text_input("Enter Sitemap URL:")
+sitemap_url = st.text_input("Enter Sitemap URL:", "https://example.com/sitemap.xml")
 
 # Process sitemap button
 if st.button("Process Sitemap"):
@@ -91,6 +106,17 @@ if "urls" in st.session_state:
                 st.write("### Related Pages for Internal Linking:")
                 for url, score in related_pages:
                     st.write(f"🔗 [{url}]({url}) (Similarity: {score:.2f})")
+
+                # Create CSV from target URL and related URLs
+                csv_data = create_csv(selected_url, related_pages)
+
+                # Create a download button for the CSV file
+                st.download_button(
+                    label="Download Related Pages as CSV",
+                    data=csv_data,
+                    file_name=f"related_pages_{selected_url.replace('https://', '').replace('/', '_')}.csv",
+                    mime="text/csv"
+                )
         else:
             st.write(f"URL `{selected_url}` is not in the sitemap. Please check and try again.")
 else:

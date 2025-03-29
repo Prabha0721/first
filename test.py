@@ -43,7 +43,7 @@ def generate_embeddings(urls):
             embeddings[url] = model.encode(text)
     return embeddings
 
-def find_related_pages(target_url, url_list, embedding_matrix, top_n=3):
+def find_related_pages(target_url, url_list, embedding_matrix, top_n=50):
     """Find top-N related pages based on cosine similarity"""
     target_idx = url_list.index(target_url)
     similarities = cosine_similarity([embedding_matrix[target_idx]], embedding_matrix)[0]

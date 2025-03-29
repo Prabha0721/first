@@ -6,7 +6,7 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Load model
+# Load the model
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
 def extract_sitemap_urls(sitemap_url):
@@ -53,27 +53,32 @@ def find_related_pages(target_url, url_list, embedding_matrix, top_n=3):
 st.title("🔗 Internal Linking Helper")
 
 sitemap_url = st.text_input("Enter Sitemap URL:", "https://example.com/sitemap.xml")
+
 if st.button("Process Sitemap"):
+    # Extract URLs from sitemap
     st.write("Extracting URLs...")
     urls = extract_sitemap_urls(sitemap_url)
     
     st.write(f"Found {len(urls)} URLs. Generating embeddings...")
+    
+    # Generate embeddings for each URL
     embeddings = generate_embeddings(urls)
     
+    # Prepare lists for URL and corresponding embeddings
     url_list = list(embeddings.keys())
     embedding_matrix = np.array(list(embeddings.values()))
     
     st.success("Embeddings generated! Now, type a URL to find related pages.")
-
-    # Text input for URL to find related pages
+    
+    # Text input for the user to enter a specific URL
     selected_url = st.text_input("Type a URL to find related pages:", "")
     
     if selected_url:
+        # Validate that the entered URL exists in the sitemap
         if selected_url in url_list:
-            # When the "Find Related Pages" button is clicked
-            find_related = st.button("Find Related Pages")
-            
-            if find_related:
+            # Button to trigger finding related pages
+            if st.button("Find Related Pages"):
+                # Find the related pages based on cosine similarity
                 related_pages = find_related_pages(selected_url, url_list, embedding_matrix)
                 st.write("### Related Pages for Internal Linking:")
                 for url, score in related_pages:
